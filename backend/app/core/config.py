@@ -73,6 +73,15 @@ class Settings(BaseSettings):
     analysis_max_depth: int = 20
     # Manifests (package.json, lockfiles) are small; anything larger is not one.
     analysis_max_manifest_bytes: int = 2 * 1024 * 1024
+
+    # -- Relevant file retrieval -------------------------------------------
+    retrieval_max_candidates: int = 50
+    retrieval_max_keywords: int = 40
+    retrieval_max_seed_files: int = 25
+    retrieval_traversal_depth: int = 2
+    # Import edges are parsed for at most this many source files.
+    retrieval_max_graph_files: int = 5_000
+    retrieval_max_source_bytes: int = 512 * 1024
     # Rate-limit resets can be far in the future; never block a request longer
     # than this waiting for one.
     github_max_retry_wait_seconds: float = 30.0

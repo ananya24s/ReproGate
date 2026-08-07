@@ -179,6 +179,95 @@ class NodePackage(BaseModel):
     has_jest_config_key: bool = False
 
 
+class KeywordSource(str, Enum):
+    """Which part of an issue a keyword came from."""
+
+    TITLE = "title"
+    BODY = "body"
+    LABEL = "label"
+
+
+class RetrievalSignal(str, Enum):
+    """A reason a file was considered relevant to an issue."""
+
+    EXPLICIT_PATH = "explicit_path"
+    """The issue names the file outright."""
+
+    FILENAME = "filename"
+    PATH_SEGMENT = "path_segment"
+    DIRECTORY = "directory"
+
+    DEPENDENCY_IMPORT = "dependency_import"
+    """The file imports a package the issue mentions."""
+
+    IMPORT_NEIGHBOUR = "import_neighbour"
+    """The file is reachable from a seed file through the import graph."""
+
+
+class ExtractedKeyword(BaseModel):
+    """One term taken from an issue, with where it came from."""
+
+    model_config = ConfigDict(frozen=True)
+
+    term: str
+    sources: tuple[KeywordSource, ...]
+    occurrences: int = Field(ge=1)
+
+
+class SignalMatch(BaseModel):
+    """One piece of evidence that a file is relevant."""
+
+    model_config = ConfigDict(frozen=True)
+
+    signal: RetrievalSignal
+    weight: float
+    detail: str
+    """Human-readable reason, used to build the candidate's explanation."""
+
+    keyword: str | None = None
+    keyword_source: KeywordSource | None = None
+
+
+class RetrievalCandidate(BaseModel):
+    """A file proposed as relevant, with every reason it was proposed."""
+
+    model_config = ConfigDict(frozen=True)
+
+    path: str
+    score: float = Field(ge=0)
+    signals: tuple[SignalMatch, ...]
+    traversal_distance: int | None = None
+    """Import-graph hops from the nearest seed file, when discovered that way."""
+
+    explanation: str
+
+
+class RetrievalResult(BaseModel):
+    """The deterministic outcome of relevant file retrieval."""
+
+    model_config = ConfigDict(frozen=True)
+
+    root: Path
+    issue_number: int
+    candidates: tuple[RetrievalCandidate, ...] = ()
+    keywords: tuple[ExtractedKeyword, ...] = ()
+    referenced_paths: tuple[str, ...] = ()
+    """Paths the issue named that resolved to a real file."""
+
+    seed_paths: tuple[str, ...] = ()
+    """Files that seeded import-graph traversal."""
+
+    traversal_depth: int = Field(default=0, ge=0)
+    considered_file_count: int = Field(default=0, ge=0)
+    graph_file_count: int = Field(default=0, ge=0)
+    truncated: bool = False
+    """Whether a configured limit stopped the search short."""
+
+    warnings: tuple[str, ...] = ()
+    retrieved_at: datetime
+    duration_ms: int = Field(default=0, ge=0)
+
+
 class RepositoryAnalysis(BaseModel):
     """The deterministic profile of a cloned repository."""
 
