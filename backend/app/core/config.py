@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     clone_shallow: bool = True
     clone_depth: int = 1
     clone_timeout_seconds: int = 300
+
+    # -- Repository analysis ----------------------------------------------
+    analysis_max_files: int = 50_000
+    analysis_max_depth: int = 20
+    # Manifests (package.json, lockfiles) are small; anything larger is not one.
+    analysis_max_manifest_bytes: int = 2 * 1024 * 1024
     # Rate-limit resets can be far in the future; never block a request longer
     # than this waiting for one.
     github_max_retry_wait_seconds: float = 30.0

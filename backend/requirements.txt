@@ -11,3 +11,4 @@ httpx>=0.27,<0.28
 docker>=7.1,<8.0
 openai>=1.54,<2.0
 python-dotenv>=1.0,<2.0
+pyyaml>=6.0,<7.0

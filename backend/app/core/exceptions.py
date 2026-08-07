@@ -135,6 +135,13 @@ class RepositoryNotClonableError(NotFoundError, RepositoryCloneError):
     message = "The repository could not be reached for cloning."
 
 
+class RepositoryAnalysisError(ReproGateError):
+    """Raised when a cloned repository cannot be analyzed."""
+
+    error_code = "repository_analysis_error"
+    message = "The repository could not be analyzed."
+
+
 class InvalidIssueURLError(ValidationError):
     """Raised when a submitted string is not a usable GitHub issue URL."""
 
