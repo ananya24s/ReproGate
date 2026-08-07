@@ -1,0 +1,84 @@
+"""Application-wide configuration loaded from the environment."""
+
+from __future__ import annotations
+
+from functools import lru_cache
+from typing import Literal
+
+from pydantic import Field, PostgresDsn, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Runtime configuration for the ReproGate backend.
+
+    Values are read from the process environment and, in local development,
+    from a ``.env`` file at the backend root. See ``.env.example``.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
+
+    # -- Application ----------------------------------------------------
+    app_name: str = "ReproGate"
+    environment: Literal["local", "development", "staging", "production"] = "local"
+    debug: bool = False
+    api_v1_prefix: str = "/api/v1"
+
+    # -- Server ---------------------------------------------------------
+    host: str = "0.0.0.0"
+    port: int = 8000
+
+    # -- Logging --------------------------------------------------------
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    log_format: Literal["json", "console"] = "json"
+
+    # -- CORS -----------------------------------------------------------
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+
+    # -- Persistence ----------------------------------------------------
+    database_url: PostgresDsn = Field(
+        default="postgresql+asyncpg://reprogate:reprogate@localhost:5432/reprogate"
+    )
+    database_echo: bool = False
+    database_pool_size: int = 5
+    database_max_overflow: int = 10
+    database_pool_timeout: int = 30
+    database_pool_recycle: int = 1800
+
+    # -- GitHub ---------------------------------------------------------
+    github_api_url: str = "https://api.github.com"
+    github_token: str | None = None
+    github_request_timeout_seconds: int = 30
+
+    # -- LLM ------------------------------------------------------------
+    llm_provider: Literal["openai"] = "openai"
+    llm_model: str = "gpt-4o"
+    llm_request_timeout_seconds: int = 120
+    openai_api_key: str | None = None
+
+    # -- Sandbox --------------------------------------------------------
+    docker_host: str | None = None
+    sandbox_timeout_seconds: int = 300
+    sandbox_memory_limit_mb: int = 2048
+    sandbox_cpu_limit: float = 1.0
+    sandbox_network_enabled: bool = False
+    sandbox_workspace_root: str = "/tmp/reprogate"
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _split_cors_origins(cls, value: object) -> object:
+        """Accept a comma-separated string so the value is easy to set via env."""
+        if isinstance(value, str) and not value.startswith("["):
+            return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return value
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    """Return the process-wide settings singleton."""
+    return Settings()
