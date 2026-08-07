@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     github_api_url: str = "https://api.github.com"
     github_token: str | None = None
     github_request_timeout_seconds: int = 30
+    github_max_retries: int = 3
+    github_retry_backoff_seconds: float = 0.5
+    # Rate-limit resets can be far in the future; never block a request longer
+    # than this waiting for one.
+    github_max_retry_wait_seconds: float = 30.0
 
     # -- LLM ------------------------------------------------------------
     llm_provider: Literal["openai"] = "openai"

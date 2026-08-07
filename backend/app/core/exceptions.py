@@ -73,6 +73,40 @@ class GitHubError(ExternalServiceError):
     message = "The GitHub API request failed."
 
 
+class GitHubNotFoundError(NotFoundError, GitHubError):
+    """Raised when a GitHub resource does not exist or is not visible.
+
+    Inherits from both bases so ``except GitHubError`` catches it while the
+    HTTP status stays 404 rather than 502 — a missing repository is the
+    caller's error, not an upstream fault.
+    """
+
+    error_code = "github_not_found"
+    message = "The requested GitHub resource was not found."
+
+
+class GitHubAuthenticationError(GitHubError):
+    """Raised when GitHub rejects the configured credentials."""
+
+    error_code = "github_authentication_error"
+    message = "GitHub rejected the configured credentials."
+
+
+class GitHubRateLimitError(GitHubError):
+    """Raised when the GitHub API rate limit is exhausted."""
+
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    error_code = "github_rate_limit_exceeded"
+    message = "The GitHub API rate limit is exhausted. Try again later."
+
+
+class InvalidIssueURLError(ValidationError):
+    """Raised when a submitted string is not a usable GitHub issue URL."""
+
+    error_code = "invalid_issue_url"
+    message = "The provided value is not a valid GitHub issue URL."
+
+
 class LLMError(ExternalServiceError):
     """Raised when the configured LLM provider cannot satisfy a request."""
 
@@ -123,12 +157,8 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(Exception)
-    async def handle_unexpected_error(
-        request: Request, exc: Exception
-    ) -> JSONResponse:
-        logger.exception(
-            "Unhandled exception", extra={"path": request.url.path}
-        )
+    async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+        logger.exception("Unhandled exception", extra={"path": request.url.path})
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
