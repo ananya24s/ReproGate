@@ -21,9 +21,10 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH"
 
-# curl is used by the container health check below.
+# curl runs the container health check below; git clones repositories under
+# verification.
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends curl \
+    && apt-get install --yes --no-install-recommends curl git \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 reprogate
 

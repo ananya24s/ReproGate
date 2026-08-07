@@ -101,6 +101,40 @@ class GitHubRateLimitError(GitHubError):
     message = "The GitHub API rate limit is exhausted. Try again later."
 
 
+class WorkspaceError(ReproGateError):
+    """Raised when a clone workspace path is unusable or unsafe."""
+
+    error_code = "workspace_error"
+    message = "The repository workspace could not be prepared."
+
+
+class RepositoryCloneError(ExternalServiceError):
+    """Raised when a repository could not be cloned."""
+
+    error_code = "repository_clone_error"
+    message = "The repository could not be cloned."
+
+
+class RepositoryCloneTimeoutError(RepositoryCloneError):
+    """Raised when a clone exceeds its configured time limit."""
+
+    status_code = status.HTTP_504_GATEWAY_TIMEOUT
+    error_code = "repository_clone_timeout"
+    message = "Cloning the repository exceeded its time limit."
+
+
+class RepositoryNotClonableError(NotFoundError, RepositoryCloneError):
+    """Raised when a repository or branch cannot be reached for cloning.
+
+    Inherits from both bases for the same reason as
+    :class:`GitHubNotFoundError`: ``except RepositoryCloneError`` still catches
+    it, but an unreachable repository maps to 404 rather than 502.
+    """
+
+    error_code = "repository_not_clonable"
+    message = "The repository could not be reached for cloning."
+
+
 class InvalidIssueURLError(ValidationError):
     """Raised when a submitted string is not a usable GitHub issue URL."""
 

@@ -62,6 +62,11 @@ class Settings(BaseSettings):
     github_request_timeout_seconds: int = 30
     github_max_retries: int = 3
     github_retry_backoff_seconds: float = 0.5
+    # -- Repository cloning ---------------------------------------------
+    git_binary: str = "git"
+    clone_shallow: bool = True
+    clone_depth: int = 1
+    clone_timeout_seconds: int = 300
     # Rate-limit resets can be far in the future; never block a request longer
     # than this waiting for one.
     github_max_retry_wait_seconds: float = 30.0

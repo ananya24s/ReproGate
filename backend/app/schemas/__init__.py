@@ -2,6 +2,7 @@
 
 from app.schemas.decision import HumanDecision, HumanDecisionCreate
 from app.schemas.github import (
+    ClonedRepository,
     GitHubIssue,
     GitHubIssueRef,
     GitHubIssueState,
@@ -16,6 +17,7 @@ from app.schemas.verification import (
 )
 
 __all__ = [
+    "ClonedRepository",
     "GitHubIssue",
     "GitHubIssueRef",
     "GitHubIssueState",

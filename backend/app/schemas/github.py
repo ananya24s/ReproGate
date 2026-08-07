@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -71,6 +72,22 @@ class GitHubIssue(BaseModel):
     created_at: datetime
     updated_at: datetime
     closed_at: datetime | None = None
+
+
+class ClonedRepository(BaseModel):
+    """A repository checked out into an isolated local workspace."""
+
+    model_config = ConfigDict(frozen=True)
+
+    full_name: str
+    path: Path
+    branch: str
+    commit_sha: str
+    clone_url: str
+    is_shallow: bool
+    depth: int | None = None
+    cloned_at: datetime
+    duration_ms: int = Field(ge=0)
 
 
 class GitHubIssueLookupRequest(BaseModel):
