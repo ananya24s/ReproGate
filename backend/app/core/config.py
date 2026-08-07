@@ -100,6 +100,11 @@ class Settings(BaseSettings):
     # -- Issue analysis -----------------------------------------------------
     issue_analysis_body_char_limit: int = 20_000
 
+    # -- Reproduction test generation ---------------------------------------
+    test_generation_max_context_files: int = 12
+    test_generation_snippet_char_limit: int = 4_000
+    test_generation_context_char_limit: int = 60_000
+
     # -- Sandbox --------------------------------------------------------
     docker_host: str | None = None
     sandbox_timeout_seconds: int = 300
