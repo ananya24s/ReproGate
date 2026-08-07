@@ -91,6 +91,14 @@ class Settings(BaseSettings):
     llm_model: str = "gpt-4o"
     llm_request_timeout_seconds: int = 120
     openai_api_key: str | None = None
+    # Zero temperature keeps replies as repeatable as the provider allows;
+    # parsing and validation are deterministic regardless.
+    llm_temperature: float = 0.0
+    llm_max_output_tokens: int = 4096
+    llm_max_retries: int = 2
+
+    # -- Issue analysis -----------------------------------------------------
+    issue_analysis_body_char_limit: int = 20_000
 
     # -- Sandbox --------------------------------------------------------
     docker_host: str | None = None

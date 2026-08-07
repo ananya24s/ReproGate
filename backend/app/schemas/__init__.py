@@ -9,6 +9,21 @@ from app.schemas.github import (
     GitHubRepository,
 )
 from app.schemas.health import HealthStatus
+from app.schemas.issue_analysis import (
+    Confidence,
+    EnvironmentDetail,
+    EvidenceBasis,
+    ExtractedStatement,
+    Indicator,
+    IssueAnalysis,
+    IssueAnalysisPayload,
+    IssueField,
+    MentionedEntity,
+    MentionKind,
+    MissingInformation,
+    ReproducibilityAssessment,
+    ReproductionStep,
+)
 from app.schemas.verification import (
     VerificationRunCreate,
     VerificationRunCreated,
@@ -18,6 +33,10 @@ from app.schemas.verification import (
 
 __all__ = [
     "ClonedRepository",
+    "Confidence",
+    "EnvironmentDetail",
+    "EvidenceBasis",
+    "ExtractedStatement",
     "GitHubIssue",
     "GitHubIssueRef",
     "GitHubIssueState",
@@ -25,6 +44,15 @@ __all__ = [
     "HealthStatus",
     "HumanDecision",
     "HumanDecisionCreate",
+    "Indicator",
+    "IssueAnalysis",
+    "IssueAnalysisPayload",
+    "IssueField",
+    "MentionKind",
+    "MentionedEntity",
+    "MissingInformation",
+    "ReproducibilityAssessment",
+    "ReproductionStep",
     "VerificationRunCreate",
     "VerificationRunCreated",
     "VerificationRunState",

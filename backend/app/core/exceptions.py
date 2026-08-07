@@ -156,6 +156,17 @@ class LLMError(ExternalServiceError):
     message = "The LLM request failed."
 
 
+class LLMResponseError(LLMError):
+    """Raised when an LLM reply is unparseable or fails schema validation.
+
+    Distinct from :class:`LLMError` so callers can tell a transport failure
+    from a well-delivered but unusable answer.
+    """
+
+    error_code = "llm_response_error"
+    message = "The LLM returned a response that could not be used."
+
+
 class SandboxError(ReproGateError):
     """Raised when sandboxed execution cannot be completed."""
 
