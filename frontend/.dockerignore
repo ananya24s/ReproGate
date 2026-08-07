@@ -1,0 +1,30 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies and build output (reinstalled and rebuilt inside the image)
+node_modules
+dist
+.vite
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Tooling caches
+.eslintcache
+*.tsbuildinfo
+coverage
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Container definitions (not needed inside the build context copy)
+Dockerfile
+.dockerignore
+
+# Docs are not shipped in the runtime image
+*.md
