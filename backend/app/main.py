@@ -12,6 +12,7 @@ from app.api.routes import api_router, health
 from app.core.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging, get_logger
+from app.github.client import GitHubClient
 from app.persistence.database import dispose_engine
 
 logger = get_logger(__name__)
@@ -25,9 +26,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         "Application starting",
         extra={"environment": settings.environment, "version": app.version},
     )
+
+    app.state.github_client = GitHubClient(settings)
     try:
         yield
     finally:
+        await app.state.github_client.aclose()
         await dispose_engine()
         logger.info("Application stopped")
 

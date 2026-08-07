@@ -8,6 +8,7 @@ responses once, for the whole application.
 from __future__ import annotations
 
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.logging import get_logger
@@ -136,6 +137,17 @@ class VerificationError(ReproGateError):
     message = "The verification run failed."
 
 
+def _describe_validation_errors(exc: RequestValidationError) -> str:
+    """Flatten pydantic's error list into one readable sentence."""
+    messages: list[str] = []
+    for error in exc.errors():
+        # Drop the leading "body"/"query" segment; the field name is enough.
+        location = ".".join(str(part) for part in error["loc"][1:])
+        messages.append(f"{location}: {error['msg']}" if location else error["msg"])
+
+    return "; ".join(messages) or ValidationError.message
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Attach the application-wide error handlers to ``app``."""
 
@@ -154,6 +166,22 @@ def register_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=exc.status_code,
             content={"error": {"code": exc.error_code, "message": exc.message}},
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def handle_request_validation_error(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
+        # FastAPI's default handler emits its own ``detail`` shape; re-wrap it
+        # so clients only ever have to parse one error envelope.
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "error": {
+                    "code": ValidationError.error_code,
+                    "message": _describe_validation_errors(exc),
+                }
+            },
         )
 
     @app.exception_handler(Exception)

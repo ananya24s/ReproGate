@@ -71,3 +71,26 @@ class GitHubIssue(BaseModel):
     created_at: datetime
     updated_at: datetime
     closed_at: datetime | None = None
+
+
+class GitHubIssueLookupRequest(BaseModel):
+    """A request to resolve a GitHub issue URL into its metadata."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # Deliberately a plain string rather than ``HttpUrl``: ``parse_issue_url``
+    # is the single authority on what a usable issue URL is, and its messages
+    # are far more actionable than a generic URL validation failure.
+    issue_url: str = Field(
+        min_length=1,
+        max_length=2048,
+        description="URL of the GitHub issue to resolve.",
+        examples=["https://github.com/owner/repo/issues/42"],
+    )
+
+
+class GitHubIssueLookup(BaseModel):
+    """Repository and issue metadata resolved from an issue URL."""
+
+    repository: GitHubRepository
+    issue: GitHubIssue

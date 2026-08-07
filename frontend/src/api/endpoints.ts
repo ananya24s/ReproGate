@@ -7,6 +7,10 @@
 export const endpoints = {
   health: () => "/health",
 
+  issues: {
+    resolve: () => "/issues/resolve",
+  },
+
   verificationRuns: {
     create: () => "/verification-runs",
     detail: (runId: string) => `/verification-runs/${runId}`,

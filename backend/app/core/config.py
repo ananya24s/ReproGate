@@ -38,7 +38,13 @@ class Settings(BaseSettings):
     log_format: Literal["json", "console"] = "json"
 
     # -- CORS -----------------------------------------------------------
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    # Vite serves on 5173; localhost and 127.0.0.1 are distinct browser origins.
+    cors_origins: list[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ]
+    )
 
     # -- Persistence ----------------------------------------------------
     database_url: PostgresDsn = Field(

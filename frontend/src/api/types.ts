@@ -50,6 +50,45 @@ export interface HumanDecision {
   reviewed_at: string;
 }
 
+export type GitHubIssueState = "open" | "closed";
+
+export interface GitHubRepository {
+  owner: string;
+  name: string;
+  full_name: string;
+  default_branch: string;
+  clone_url: string;
+  html_url: string;
+  language: string | null;
+  description: string | null;
+  is_private: boolean;
+  is_archived: boolean;
+  is_fork: boolean;
+}
+
+export interface GitHubIssue {
+  number: number;
+  title: string;
+  body: string | null;
+  state: GitHubIssueState;
+  author: string | null;
+  labels: string[];
+  html_url: string;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+}
+
+export interface GitHubIssueLookupRequest {
+  issue_url: string;
+}
+
+/** Repository and issue metadata resolved from an issue URL. */
+export interface GitHubIssueLookup {
+  repository: GitHubRepository;
+  issue: GitHubIssue;
+}
+
 /** Error envelope returned by the backend exception handlers. */
 export interface ApiErrorBody {
   error: {
