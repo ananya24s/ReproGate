@@ -108,10 +108,25 @@ class Settings(BaseSettings):
     # -- Sandbox --------------------------------------------------------
     docker_host: str | None = None
     sandbox_timeout_seconds: int = 300
+    """Wall-clock limit for the test phase."""
+
+    sandbox_install_timeout_seconds: int = 600
     sandbox_memory_limit_mb: int = 2048
     sandbox_cpu_limit: float = 1.0
+    sandbox_pids_limit: int = 512
     sandbox_network_enabled: bool = False
+    """Whether the test phase keeps network access. Install always needs it."""
+
     sandbox_workspace_root: str = "/tmp/reprogate"
+    sandbox_workspace_container_path: str = "/workspace"
+    sandbox_node_image: str = "node:20-bookworm-slim"
+    sandbox_pull_missing_image: bool = True
+    sandbox_read_only_rootfs: bool = False
+    sandbox_tmpfs_size_mb: int = 256
+    sandbox_run_as_user: str | None = None
+    """``uid:gid`` for the container. ``None`` derives it from the host user."""
+
+    sandbox_max_output_bytes: int = 1_000_000
 
     @field_validator("cors_origins", mode="before")
     @classmethod
